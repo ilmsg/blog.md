@@ -36,4 +36,23 @@ describe('File System Loader', function () {
             done();
         });
     });
+    it('should parse html files', function (done) {
+        var loader = new FileSystemLoader(__dirname + '/data/blog3');
+        loader.load(function (err, posts) {
+            assert(!err, err);
+            assert.equal(2, Object.keys(posts).length);
+            var post1 = __dirname + '/data/blog3/a/post1.html'
+              , post2 = __dirname + '/data/blog3/b/post2.html';
+            assert(post1 in posts);
+            assert(post2 in posts);
+            assert.equal('post1', posts[post1].title);
+            assert.equal('post2', posts[post2].title);
+            assert.equal('bar', posts[post1].foo);
+            assert.equal('baz', posts[post2].foo);
+            var html = '<p>The <em>quick</em> brown fox jumped over the <strong>lazy</strong> dog</p>';
+            assert.equal(html, posts[post1].body);
+            assert.equal(html, posts[post2].body);
+            done();
+        });
+    });
 });

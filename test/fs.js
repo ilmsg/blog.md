@@ -19,11 +19,12 @@ describe('File System Loader', function () {
     });
     it('should parse markdown files', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog2');
-        loader.load(function (err, posts) {
+        loader.load(function (err, blog) {
             assert(!err, err);
-            assert.equal(2, Object.keys(posts).length);
-            var post1 = __dirname + '/data/blog2/a/post1.md'
+            var posts = blog.posts || {}
+              , post1 = __dirname + '/data/blog2/a/post1.md'
               , post2 = __dirname + '/data/blog2/b/post2.md';
+            assert.equal(2, Object.keys(posts).length);
             assert(post1 in posts);
             assert(post2 in posts);
             assert.equal('post1', posts[post1].title);
@@ -38,11 +39,12 @@ describe('File System Loader', function () {
     });
     it('should parse html files', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog3');
-        loader.load(function (err, posts) {
+        loader.load(function (err, blog) {
             assert(!err, err);
-            assert.equal(2, Object.keys(posts).length);
-            var post1 = __dirname + '/data/blog3/a/post1.html'
+            var posts = blog.posts || {}
+              , post1 = __dirname + '/data/blog3/a/post1.html'
               , post2 = __dirname + '/data/blog3/b/post2.html';
+            assert.equal(2, Object.keys(posts).length);
             assert(post1 in posts);
             assert(post2 in posts);
             assert.equal('post1', posts[post1].title);
@@ -56,3 +58,4 @@ describe('File System Loader', function () {
         });
     });
 });
+

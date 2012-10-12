@@ -5,9 +5,14 @@ describe('File System Loader', function () {
     it('should parse metadata blocks', function (done) {
         var block = 'title: foo\n' +
                     'some.nested.obj.foo: a\n' +
-                    'some.nested.obj.bar: b\n';
+                    'some.nested.obj.bar: b\n' +
+                    'categories: [ foo, bar, baz ]';
         var meta = new FileSystemLoader(__dirname + '/data/blog1').parseMetadata(block);
-        assert.deepEqual(meta, { title: 'foo', some: { nested: { obj: { foo: 'a', bar: 'b' } } } });
+        assert.deepEqual(meta, {
+            title: 'foo'
+          , some: { nested: { obj: { foo: 'a', bar: 'b' } } }
+          , categories: [ 'foo', 'bar', 'baz' ]
+        });
         done();
     });
     it('should fail on an unknown format', function (done) {

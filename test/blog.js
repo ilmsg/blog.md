@@ -149,6 +149,8 @@ describe('Blog', function () {
         blog.load(function (err) {
             assert(!err, err);
             assert.deepEqual(blog.keys('category'), ['baz', 'bar', 'foobar']);
+            //Check the cached response
+            assert.deepEqual(blog.keys('category'), ['baz', 'bar', 'foobar']);
             done();
         });
     });

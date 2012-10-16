@@ -64,6 +64,9 @@ describe('Blog', function () {
             blog.post('foo', function (err, post) {
                 assert(!err, err);
                 assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
+                assert.equal(post.day, 1);
+                assert.equal(post.month, 10);
+                assert.equal(post.year, 2012);
                 blog.post('foo-2', function (err, post) {
                     assert(!err, err);
                     assert.equal(new Date('2012-10-02').getTime(), post.date.getTime());

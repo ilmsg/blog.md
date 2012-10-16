@@ -2,6 +2,7 @@ var assert = require('assert')
   , FileSystemLoader = require('../').FileSystemLoader;
 
 describe('File System Loader', function () {
+
     it('should parse metadata blocks', function (done) {
         var block = 'title: foo\n' +
                     'some.nested.obj.foo: a\n' +
@@ -15,6 +16,7 @@ describe('File System Loader', function () {
         });
         done();
     });
+
     it('should fail on an unknown format', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog1');
         loader.load(function (err, posts) {
@@ -22,6 +24,7 @@ describe('File System Loader', function () {
             done();
         });
     });
+
     it('should load blog metadata', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog2');
         loader.load(function (err, blog) {
@@ -31,6 +34,7 @@ describe('File System Loader', function () {
             done();
         });
     });
+
     it('should parse markdown files', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog2');
         loader.load(function (err, blog) {
@@ -51,6 +55,7 @@ describe('File System Loader', function () {
             done();
         });
     });
+
     it('should parse html files', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog3');
         loader.load(function (err, blog) {
@@ -71,5 +76,6 @@ describe('File System Loader', function () {
             done();
         });
     });
+
 });
 

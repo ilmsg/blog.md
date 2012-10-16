@@ -22,6 +22,15 @@ describe('File System Loader', function () {
             done();
         });
     });
+    it('should load blog metadata', function (done) {
+        var loader = new FileSystemLoader(__dirname + '/data/blog2');
+        loader.load(function (err, blog) {
+            assert(!err, err);
+            assert.equal(blog.foo, 'bar');
+            assert.equal(blog.name, 'My blog');
+            done();
+        });
+    });
     it('should parse markdown files', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog2');
         loader.load(function (err, blog) {

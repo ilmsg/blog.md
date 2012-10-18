@@ -187,7 +187,7 @@ describe('Blog', function () {
           , { title: 'baz', date: '2012-10-04', category: 'baz' }
         ]);
         blog.map(function (post) {
-            post.permalink = format('/blog/%s/%s', blog.slug(post.category), post.id);
+            post.permalink = format('/blog/%s/%s', blog.slug(post.category), post.slug);
             return post;
         });
         blog.load(function (err) {

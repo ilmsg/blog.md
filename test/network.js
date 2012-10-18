@@ -133,7 +133,7 @@ describe('Network', function () {
             { title: 'a', date: '2012-10-02', category: 'foobar' }
         ]));
         network.map(function (post) {
-            post.permalink = format('/%s/%s/%s/%s', post.blog, post.year, post.month, post.id);
+            post.permalink = format('/%s/%s/%s/%s', post.blog, post.year, post.month, post.slug);
             return post;
         });
         network.load(function (err) {

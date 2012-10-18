@@ -1,4 +1,5 @@
 var assert = require('assert')
+  , format = require('util').format
   , Blog = require('../').Blog;
 
 describe('Blog', function () {
@@ -174,6 +175,27 @@ describe('Blog', function () {
                     assert.equal(post2.date.getTime(), new Date('2012-10-02').getTime());
                     done();
                 });
+            });
+        });
+    });
+
+    it('should run a user-defined mapper function onload', function (done) {
+        var blog = new Blog([
+            { title: 'foo', date: '2012-10-01', category: 'bar' }
+          , { title: 'foo', date: '2012-10-02', category: 'foobar' }
+          , { title: 'bar', date: '2012-10-03', category: 'foobar' }
+          , { title: 'baz', date: '2012-10-04', category: 'baz' }
+        ]);
+        blog.map(function (post) {
+            post.permalink = format('/blog/%s/%s', blog.slug(post.category), post.id);
+            return post;
+        });
+        blog.load(function (err) {
+            assert(!err, err);
+            blog.post('bar', function (err, post) {
+                assert(!err, err);
+                assert.equal(post.permalink, '/blog/foobar/bar');
+                done();
             });
         });
     });

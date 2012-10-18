@@ -1,4 +1,5 @@
 var assert = require('assert')
+  , format = require('util').format
   , Blog = require('../').Blog
   , Network = require('../').Network;
 
@@ -120,6 +121,32 @@ describe('Network', function () {
             //Check the cached response
             assert.deepEqual(network.keys('category'), ['foo', 'bar', 'foobar']);
             done();
+        });
+    });
+
+    it('should run a user-defined mapper function onload', function (done) {
+        var network = new Network();
+        network.add('fooblog', new Blog([
+            { title: 'foo', date: '2012-10-01', category: 'bar' }
+        ]));
+        network.add('barblog', new Blog([
+            { title: 'a', date: '2012-10-02', category: 'foobar' }
+        ]));
+        network.map(function (post) {
+            post.permalink = format('/%s/%s/%s/%s', post.blog, post.year, post.month, post.id);
+            return post;
+        });
+        network.load(function (err) {
+            assert(!err, err);
+            network.post('fooblog', 'foo', function (err, post) {
+                assert(!err, err);
+                assert.equal(post.permalink, '/fooblog/2012/10/foo');
+                network.post('barblog', 'a', function (err, post) {
+                    assert(!err, err);
+                    assert.equal(post.permalink, '/barblog/2012/10/a');
+                    done();
+                });
+            });
         });
     });
 

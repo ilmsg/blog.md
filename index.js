@@ -4,5 +4,6 @@ module.exports = {
   , FileSystemLoader: require('./lib/loaders/fs').FileSystemLoader
   , ArrayLoader: require('./lib/loaders/array').ArrayLoader
   , WordpressLoader: require('./lib/loaders/wordpress').WordpressLoader
+  , middleware: require('./lib/middleware')
 };
 

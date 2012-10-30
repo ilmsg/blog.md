@@ -67,9 +67,9 @@ describe('Network', function () {
                 assert(!err, err);
                 assert.equal(selected.length, 3);
                 assert.equal(selected[0].title, 'bar');
-                assert.equal(selected[0].blog, 'fooblog');
+                assert.equal(selected[0].blog_name, 'fooblog');
                 assert.equal(selected[1].title, 'b');
-                assert.equal(selected[1].blog, 'barblog');
+                assert.equal(selected[1].blog_name, 'barblog');
                 assert.equal(selected[2].title, 'foo');
                 done();
             });
@@ -133,7 +133,7 @@ describe('Network', function () {
             { title: 'a', date: '2012-10-02', category: 'foobar' }
         ]));
         network.map(function (post) {
-            post.permalink = format('/%s/%s/%s/%s', post.blog, post.year, post.month, post.slug);
+            post.permalink = format('/%s/%s/%s/%s', post.blog_name, post.year, post.month, post.slug);
             return post;
         });
         network.load(function (err) {

@@ -19,28 +19,33 @@ describe('File System Loader', function () {
 
     it('should fail on an unknown format', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog1');
-        loader.load(function (err, posts) {
+        loader.load(function (err) {
             assert(err);
             done();
         });
     });
 
     it('should load blog metadata', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog2');
-        loader.load(function (err, blog) {
-            assert(!err, err);
+        var loader = new FileSystemLoader(__dirname + '/data/blog2')
+          , pushed = false;
+        loader.push = function (posts, blog) {
+            pushed = true;
             assert.equal(blog.foo, 'bar');
             assert.equal(blog.name, 'My blog');
+        };
+        loader.load(function (err, blog) {
+            assert(!err, err);
+            assert(pushed);
             done();
         });
     });
 
     it('should parse markdown files', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog2');
-        loader.load(function (err, blog) {
-            assert(!err, err);
-            var posts = blog.posts || {}
-              , post1 = __dirname + '/data/blog2/a/post1.md'
+        var loader = new FileSystemLoader(__dirname + '/data/blog2')
+          , pushed = false;
+        loader.push = function (posts, blog) {
+            pushed = true;
+            var post1 = __dirname + '/data/blog2/a/post1.md'
               , post2 = __dirname + '/data/blog2/b/post2.md';
             assert.equal(2, Object.keys(posts).length);
             assert(post1 in posts);
@@ -52,16 +57,20 @@ describe('File System Loader', function () {
             var html = '<p>The <em>quick</em> brown fox jumped over the <strong>lazy</strong> dog</p>';
             assert.equal(html, posts[post1].body);
             assert.equal(html, posts[post2].body);
+        };
+        loader.load(function (err) {
+            assert(!err, err);
+            assert(pushed);
             done();
         });
     });
 
     it('should parse html files', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog3');
-        loader.load(function (err, blog) {
-            assert(!err, err);
-            var posts = blog.posts || {}
-              , post1 = __dirname + '/data/blog3/a/post1.html'
+        var loader = new FileSystemLoader(__dirname + '/data/blog3')
+          , pushed = false;
+        loader.push = function (posts, blog) {
+            pushed = true;
+            var post1 = __dirname + '/data/blog3/a/post1.html'
               , post2 = __dirname + '/data/blog3/b/post2.html';
             assert.equal(2, Object.keys(posts).length);
             assert(post1 in posts);
@@ -73,9 +82,21 @@ describe('File System Loader', function () {
             var html = '<p>The <em>quick</em> brown fox jumped over the <strong>lazy</strong> dog</p>';
             assert.equal(html, posts[post1].body);
             assert.equal(html, posts[post2].body);
+        };
+        loader.load(function (err, blog) {
+            assert(!err, err);
+            assert(pushed);
             done();
         });
     });
+
+    it('should detect new blog posts and push automatically');
+
+    it('should push changes to blog posts');
+
+    it('should detect when a blog post is removed');
+
+    it('should detect changes to blog metadata');
 
 });
 

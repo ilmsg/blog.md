@@ -104,7 +104,7 @@ describe('Blog', function () {
 
     it('should select posts while respecting a limit and offset parameter', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: '2012-10-01' }
+            { title: 'foobar', date: '2012-10-01' }
           , { title: 'foo', date: '2012-10-02' }
           , { title: 'bar', date: '2012-10-03' }
           , { title: 'baz', date: '2012-10-04' }
@@ -116,6 +116,26 @@ describe('Blog', function () {
                 assert.equal(selected.length, 2);
                 assert.equal(selected[0].title, 'bar');
                 assert.equal(selected[1].title, 'foo');
+                done();
+            });
+        });
+    });
+
+    it('should select posts while respecting an offset parameter', function (done) {
+        var blog = new Blog([
+            { title: 'foobar', date: '2012-10-01' }
+          , { title: 'foo', date: '2012-10-02' }
+          , { title: 'bar', date: '2012-10-03' }
+          , { title: 'baz', date: '2012-10-04' }
+        ]);
+        blog.load(function (err) {
+            assert(!err, err);
+            blog.posts(null, null, 1, function (err, selected) {
+                assert(!err, err);
+                assert.equal(selected.length, 3);
+                assert.equal(selected[0].title, 'bar');
+                assert.equal(selected[1].title, 'foo');
+                assert.equal(selected[2].title, 'foobar');
                 done();
             });
         });

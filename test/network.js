@@ -76,6 +76,38 @@ describe('Network', function () {
         });
     });
 
+    it('should select posts while respecting a limit and offset parameter', function (done) {
+        var network = new Network();
+        network.add('fooblog', new Blog([
+            { title: 'foobar', date: '2012-10-01' }
+          , { title: 'foo', date: '2012-10-03' }
+          , { title: 'bar', date: '2012-10-05' }
+        ]));
+        network.add('barblog', new Blog([
+            { title: 'a', date: '2012-10-02' }
+          , { title: 'b', date: '2012-10-04' }
+          , { title: 'c', date: '2012-10-06' }
+        ]));
+        network.load(function (err) {
+            assert(!err, err);
+            network.posts(null, null, 1, function (err, selected) {
+                assert(!err, err);
+                assert.equal(selected.length, 5);
+                assert.equal(selected[0].title, 'bar');
+                assert.equal(selected[0].blog_name, 'fooblog');
+                assert.equal(selected[1].title, 'b');
+                assert.equal(selected[1].blog_name, 'barblog');
+                assert.equal(selected[2].title, 'foo');
+                assert.equal(selected[2].blog_name, 'fooblog');
+                assert.equal(selected[3].title, 'a');
+                assert.equal(selected[3].blog_name, 'barblog');
+                assert.equal(selected[4].title, 'foobar');
+                assert.equal(selected[4].blog_name, 'fooblog');
+                done();
+            });
+        });
+    });
+
     it('should select posts using a query', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([

@@ -15,7 +15,6 @@ deps: dependencies
 
 test:
 	@./node_modules/mocha/bin/mocha \
-	    --ignore-leaks \
 		--reporter ${REPORTER} \
 		-s 200 \
 		-t 2000 $T

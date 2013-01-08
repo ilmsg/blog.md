@@ -118,6 +118,21 @@ describe('Blog', function () {
                 assert.equal(selected[1].title, 'foo');
                 done();
             });
+            assert.equal(blog.count(), 4);
+        });
+    });
+
+    it('should provide a way to get the number of matched posts', function (done) {
+        var blog = new Blog([
+            { title: 'foo', date: '2012-10-02' }
+          , { title: 'foo', date: '2012-10-03' }
+          , { title: 'baz', date: '2012-10-04' }
+        ]);
+        blog.load(function (err) {
+            assert(!err, err);
+            assert.equal(blog.count(), 3);
+            assert.equal(blog.count({ title: 'foo' }), 2);
+            done();
         });
     });
 

@@ -244,5 +244,33 @@ describe('Blog', function () {
         });
     });
 
+    it('should maintain an internal linked list to get prev/next posts', function (done) {
+        var blog = new Blog([
+            { title: 'foo1', date: '2012-10-01', category: 'bar' }
+          , { title: 'foo2', date: '2012-10-02', category: 'foobar' }
+          , { title: 'bar1', date: '2012-10-03', category: 'foobar' }
+          , { title: 'bar2', date: '2012-10-04', category: 'baz' }
+        ]);
+        blog.load(function (err) {
+            assert(!err, err);
+            blog.posts(function (err, selected) {
+                assert(!err, err);
+                assert.equal(selected[0].title, 'bar2');
+                assert.equal(selected[0].prev, null);
+                assert.equal(selected[0].next.title, 'bar1');
+                assert.equal(selected[1].title, 'bar1');
+                assert.equal(selected[1].prev.title, 'bar2');
+                assert.equal(selected[1].next.title, 'foo2');
+                assert.equal(selected[2].title, 'foo2');
+                assert.equal(selected[2].prev.title, 'bar1');
+                assert.equal(selected[2].next.title, 'foo1');
+                assert.equal(selected[3].title, 'foo1');
+                assert.equal(selected[3].prev.title, 'foo2');
+                assert.equal(selected[3].next, null);
+                done();
+            });
+        });
+    });
+
 });
 

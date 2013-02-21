@@ -287,5 +287,41 @@ describe('Blog', function () {
         });
     });
 
+    it('should allow you to chain queries together', function (done) {
+        var blog = new Blog([
+            { id: 1, title: 'foo1', date: '2012-10-01', category: 'bar', tag: 'foo' }
+          , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', tag: 'bar' }
+          , { id: 3, title: 'foo3', date: '2012-08-01', category: 'foo', tag: 'bar' }
+        ]);
+        blog.load(function (err) {
+            assert(!err, err);
+            blog.postsChain([
+                { query: { category: 'bar' } }
+              , { query: { tag: 'bar' } }
+            ], function (err, a, b) {
+                assert(!err, err);
+                assert(Array.isArray(a));
+                assert(Array.isArray(b));
+                assert.equal(a.length, 2);
+                assert.equal(b.length, 1);
+                assert.equal(a[0].title, 'foo1');
+                assert.equal(a[1].title, 'foo2');
+                assert.equal(b[0].title, 'foo3');
+                blog.postsChain([
+                    { query: { category: 'bar' }, limit: 1 }
+                  , { query: { tag: 'bar' } }
+                ], function (err, a, b) {
+                    assert(!err, err);
+                    assert.equal(a.length, 1);
+                    assert.equal(b.length, 2);
+                    assert.equal(a[0].title, 'foo1');
+                    assert.equal(b[0].title, 'foo2');
+                    assert.equal(b[1].title, 'foo3');
+                    done();
+                });
+            });
+        });
+    });
+
 });
 

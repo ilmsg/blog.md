@@ -182,5 +182,41 @@ describe('Network', function () {
         });
     });
 
+    it('should chain queries together', function (done) {
+        var network = new Network();
+        network.add('fooblog', new Blog([
+            { id: 1, title: 'foo', date: '2012-10-05', category: 'bar' }
+          , { id: 2, title: 'bar', date: '2012-10-03', category: 'bar' }
+          , { id: 3, title: 'baz', date: '2012-10-01', category: 'foo' }
+        ]));
+        network.add('barblog', new Blog([
+            { id: 1, title: 'a', date: '2012-10-06', category: 'foobar' }
+          , { id: 2, title: 'b', date: '2012-10-04', category: 'bar' }
+          , { id: 3, title: 'c', date: '2012-10-02', category: 'foobar' }
+        ]));
+        network.load(function (err) {
+            assert(!err, err);
+            network.postsChain([
+                { query: { category: 'bar' } }
+              , { query: { blog_name: 'barblog' }, limit: 1 }
+              , { query: { blog_name: 'fooblog' }, limit: 1 }
+            ], function (err, a, b, c) {
+                assert(!err, err);
+                assert(Array.isArray(a));
+                assert(Array.isArray(b));
+                assert(Array.isArray(c));
+                assert.equal(a.length, 3);
+                assert.equal(b.length, 1);
+                assert.equal(c.length, 1);
+                assert.equal(a[0].title, 'foo');
+                assert.equal(a[1].title, 'b');
+                assert.equal(a[2].title, 'bar');
+                assert.equal(b[0].title, 'a');
+                assert.equal(c[0].title, 'baz');
+                done();
+            });
+        });
+    });
+
 });
 

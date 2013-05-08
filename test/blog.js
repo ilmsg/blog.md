@@ -323,5 +323,30 @@ describe('Blog', function () {
         });
     });
 
+    it('should support random selection of posts', function (done) {
+        var blog = new Blog([
+            { id: 1, title: 'foo1', date: '2012-10-01', category: 'bar', tag: 'foo' }
+          , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', tag: 'bar' }
+          , { id: 3, title: 'foo3', date: '2012-08-01', category: 'foo', tag: 'bar' }
+        ]);
+        blog.load(function (err) {
+            assert(!err, err);
+            blog.postsChain([
+                { query: { category: 'bar' }, limit: 1, random: true }
+              , { query: { category: 'bar' }, limit: 1, random: true }
+            ], function (err, a, b) {
+                assert(!err, err);
+                assert(Array.isArray(a));
+                assert(Array.isArray(b));
+                assert.equal(a.length, 1);
+                assert.equal(b.length, 1);
+                assert(a[0].title === 'foo1' || a[0].title === 'foo2');
+                assert(b[0].title === 'foo1' || b[0].title === 'foo2');
+                assert(a[0].title !== b[0].title);
+                done();
+            });
+        });
+    });
+
 });
 

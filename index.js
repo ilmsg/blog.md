@@ -3,6 +3,5 @@ module.exports = {
   , Network: require('./lib/network').Network
   , FileSystemLoader: require('./lib/loaders/fs').FileSystemLoader
   , ArrayLoader: require('./lib/loaders/array').ArrayLoader
-  , middleware: require('./lib/middleware')
 };
 

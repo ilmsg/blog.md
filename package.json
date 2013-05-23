@@ -17,9 +17,7 @@
     "marked": "*"
   },
   "devDependencies": {
-    "mocha": "*",
-    "express": "*",
-    "supertest": "*"
+    "mocha": "*"
   },
   "author": "Sydney Stockholm <opensource@sydneystockholm.com>",
   "license": "MIT"

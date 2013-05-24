@@ -14,7 +14,8 @@
     "blog", "markdown"
   ],
   "dependencies": {
-    "marked": "*"
+    "marked": "*",
+    "sift": "*"
   },
   "devDependencies": {
     "mocha": "*"

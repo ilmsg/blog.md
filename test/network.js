@@ -13,10 +13,7 @@ describe('Network', function () {
         network.add('barblog', new Blog([
             { title: 'a' /* missing date */ }
         ]));
-        network.load(function (err) {
-            if (!err) {
-                assert(false, 'No error on network load');
-            }
+        network.on('error', function () {
             done();
         });
     });
@@ -33,8 +30,7 @@ describe('Network', function () {
           , { title: 'b', date: '2012-10-04' }
           , { title: 'c', date: '2012-10-06' }
         ]));
-        network.load(function (err) {
-            assert(!err, err);
+        network.on('load', function () {
             network.posts(function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 6);
@@ -61,8 +57,7 @@ describe('Network', function () {
           , { title: 'b', date: '2012-10-04' }
           , { title: 'c', date: '2012-10-06' }
         ]));
-        network.load(function (err) {
-            assert(!err, err);
+        network.on('load', function () {
             network.posts(null, 3, 1, function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 3);
@@ -88,8 +83,7 @@ describe('Network', function () {
           , { title: 'b', date: '2012-10-04' }
           , { title: 'c', date: '2012-10-06' }
         ]));
-        network.load(function (err) {
-            assert(!err, err);
+        network.on('load', function () {
             network.posts(null, null, 1, function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 5);
@@ -120,8 +114,7 @@ describe('Network', function () {
           , { title: 'b', date: '2012-10-04', category: 'bar' }
           , { title: 'c', date: '2012-10-06' }
         ]));
-        network.load(function (err) {
-            assert(!err, err);
+        network.on('load', function () {
             network.posts({ category: 'bar' }, function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 2);
@@ -147,8 +140,7 @@ describe('Network', function () {
           , { id: 2, title: 'b', date: '2012-10-04', category: 'bar' }
           , { id: 3, title: 'c', date: '2012-10-02', category: 'foobar' }
         ]));
-        network.load(function (err) {
-            assert(!err, err);
+        network.on('load', function () {
             network.postsChain([
                 { query: { category: 'bar' } }
               , { query: { blog_name: 'barblog' }, limit: 1 }

@@ -1,5 +1,4 @@
 var assert = require('assert')
-  , format = require('util').format
   , Blog = require('../').Blog;
 
 describe('Blog', function () {
@@ -8,8 +7,7 @@ describe('Blog', function () {
         var blog = new Blog([
             { title: 'foo', date: '2012-10-01' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.post('foo', function (err, foo) {
                 assert(!err, err);
                 assert(foo.date instanceof Date);
@@ -23,11 +21,8 @@ describe('Blog', function () {
         var blog = new Blog([
             { date: '2012-10-01' }
         ]);
-        blog.load(function (err) {
-            if (err) {
-                return done();
-            }
-            assert(false, 'No error received from callback');
+        blog.on('error', function () {
+            done();
         });
     });
 
@@ -35,11 +30,8 @@ describe('Blog', function () {
         var blog = new Blog([
             { title: 'foo' }
         ]);
-        blog.load(function (err) {
-            if (err) {
-                return done();
-            }
-            assert(false, 'No error received from callback');
+        blog.on('error', function () {
+            done();
         });
     });
 
@@ -47,11 +39,8 @@ describe('Blog', function () {
         var blog = new Blog([
             { title: 'foo', date: 'foo' }
         ]);
-        blog.load(function (err) {
-            if (err) {
-                return done();
-            }
-            assert(false, 'No error received from callback');
+        blog.on('error', function () {
+            done();
         });
     });
 
@@ -61,7 +50,7 @@ describe('Blog', function () {
           , { title: 'foo', date: '2012-10-02' }
           , { title: 'foo', date: '2012-10-03' }
         ]);
-        blog.load(function (err) {
+        blog.on('load', function () {
             blog.post('foo', function (err, post) {
                 assert(!err, err);
                 assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
@@ -88,8 +77,7 @@ describe('Blog', function () {
           , { title: 'bar', date: '2012-10-03' }
           , { title: 'baz', date: '2012-10-04' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.posts(function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 4);
@@ -109,8 +97,7 @@ describe('Blog', function () {
           , { title: 'bar', date: '2012-10-03' }
           , { title: 'baz', date: '2012-10-04' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.posts(null, 2, 1, function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 2);
@@ -128,8 +115,7 @@ describe('Blog', function () {
           , { title: 'foo', date: '2012-10-03' }
           , { title: 'baz', date: '2012-10-04' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             assert.equal(blog.count(), 3);
             assert.equal(blog.count({ title: 'foo' }), 2);
             done();
@@ -143,8 +129,7 @@ describe('Blog', function () {
           , { title: 'bar', date: '2012-10-03' }
           , { title: 'baz', date: '2012-10-04' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.posts(null, null, 1, function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 3);
@@ -163,8 +148,7 @@ describe('Blog', function () {
           , { title: 'bar', date: '2012-10-03', category: 'bar' }
           , { title: 'baz', date: '2012-10-04', category: 'baz' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.posts({ category: 'bar' }, function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected.length, 2);
@@ -180,8 +164,7 @@ describe('Blog', function () {
 
     it('should load from the file system when a string is passed to the constructor', function (done) {
         var blog = new Blog(__dirname + '/data/blog2');
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.post('post1', function (err, post1) {
                 assert(!err, err);
                 assert.equal(post1.title, 'post1');
@@ -205,8 +188,7 @@ describe('Blog', function () {
           , { title: 'bar1', date: '2012-10-03', category: 'foobar' }
           , { title: 'bar2', date: '2012-10-04', category: 'baz' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.posts(function (err, selected) {
                 assert(!err, err);
                 assert.equal(selected[0].title, 'bar2');
@@ -232,8 +214,7 @@ describe('Blog', function () {
           , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', tag: 'bar' }
           , { id: 3, title: 'foo3', date: '2012-08-01', category: 'foo', tag: 'bar' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.postsChain([
                 { query: { category: 'bar' } }
               , { query: { tag: 'bar' } }
@@ -268,8 +249,7 @@ describe('Blog', function () {
           , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', tag: 'bar' }
           , { id: 3, title: 'foo3', date: '2012-08-01', category: 'foo', tag: 'bar' }
         ]);
-        blog.load(function (err) {
-            assert(!err, err);
+        blog.on('load', function () {
             blog.postsChain([
                 { query: { category: 'bar' }, limit: 1, random: true }
               , { query: { category: 'bar' }, limit: 1, random: true }

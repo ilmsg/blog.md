@@ -8,7 +8,7 @@ describe('File System Loader', function () {
                     'some.nested.obj.foo: a\n' +
                     'some.nested.obj.bar: b\n' +
                     'categories: [ foo, bar, baz ]';
-        var meta = new FileSystemLoader(__dirname + '/data/blog1').parseMetadata(block);
+        var meta = FileSystemLoader.prototype.parseMetadata(block);
         assert.deepEqual(meta, {
             title: 'foo'
           , some: { nested: { obj: { foo: 'a', bar: 'b' } } }
@@ -19,73 +19,51 @@ describe('File System Loader', function () {
 
     it('should fail on an unknown format', function (done) {
         var loader = new FileSystemLoader(__dirname + '/data/blog1');
-        loader.load(function (err) {
+        loader.on('error', function (err) {
             assert(err);
             done();
         });
     });
 
     it('should load blog metadata', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog2')
-          , pushed = false;
-        loader.push = function (posts, blog) {
-            pushed = true;
+        var loader = new FileSystemLoader(__dirname + '/data/blog2');
+        loader.on('load', function (posts, blog) {
             assert.equal(blog.foo, 'bar');
             assert.equal(blog.name, 'My blog');
-        };
-        loader.load(function (err, blog) {
-            assert(!err, err);
-            assert(pushed);
             done();
         });
     });
 
     it('should parse markdown files', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog2')
-          , pushed = false;
-        loader.push = function (posts, blog) {
-            pushed = true;
-            var post1 = __dirname + '/data/blog2/a/post1.md'
-              , post2 = __dirname + '/data/blog2/b/post2.md';
-            assert.equal(2, Object.keys(posts).length);
-            assert(post1 in posts);
-            assert(post2 in posts);
-            assert.equal('post1', posts[post1].title);
-            assert.equal('post2', posts[post2].title);
-            assert.equal('bar', posts[post1].foo);
-            assert.equal('baz', posts[post2].foo);
+        var loader = new FileSystemLoader(__dirname + '/data/blog2');
+        loader.on('load', function (posts) {
+            assert.equal(posts.length, 2);
+            assert.equal(posts[0].id, __dirname + '/data/blog2/a/post1.md');
+            assert.equal(posts[1].id, __dirname + '/data/blog2/b/post2.md');
+            assert.equal('post1', posts[0].title);
+            assert.equal('post2', posts[1].title);
+            assert.equal('bar', posts[0].foo);
+            assert.equal('baz', posts[1].foo);
             var html = '<p>The <em>quick</em> brown fox jumped over the <strong>lazy</strong> dog</p>';
-            assert.equal(html, posts[post1].body);
-            assert.equal(html, posts[post2].body);
-        };
-        loader.load(function (err) {
-            assert(!err, err);
-            assert(pushed);
+            assert.equal(html, posts[0].body);
+            assert.equal(html, posts[1].body);
             done();
         });
     });
 
     it('should parse html files', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog3')
-          , pushed = false;
-        loader.push = function (posts, blog) {
-            pushed = true;
-            var post1 = __dirname + '/data/blog3/a/post1.html'
-              , post2 = __dirname + '/data/blog3/b/post2.html';
-            assert.equal(2, Object.keys(posts).length);
-            assert(post1 in posts);
-            assert(post2 in posts);
-            assert.equal('post1', posts[post1].title);
-            assert.equal('post2', posts[post2].title);
-            assert.equal('bar', posts[post1].foo);
-            assert.equal('baz', posts[post2].foo);
+        var loader = new FileSystemLoader(__dirname + '/data/blog3');
+        loader.on('load', function (posts) {
+            assert.equal(posts.length, 2);
+            assert.equal(posts[0].id, __dirname + '/data/blog3/a/post1.html');
+            assert.equal(posts[1].id, __dirname + '/data/blog3/b/post2.html');
+            assert.equal('post1', posts[0].title);
+            assert.equal('post2', posts[1].title);
+            assert.equal('bar', posts[0].foo);
+            assert.equal('baz', posts[1].foo);
             var html = '<p>The <em>quick</em> brown fox jumped over the <strong>lazy</strong> dog</p>';
-            assert.equal(html, posts[post1].body);
-            assert.equal(html, posts[post2].body);
-        };
-        loader.load(function (err, blog) {
-            assert(!err, err);
-            assert(pushed);
+            assert.equal(html, posts[0].body);
+            assert.equal(html, posts[1].body);
             done();
         });
     });

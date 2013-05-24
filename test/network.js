@@ -163,5 +163,32 @@ describe('Network', function () {
         });
     });
 
+    it('should use post.match() if available', function (done) {
+        function match(category) {
+            return this.category === category;
+        }
+        var network = new Network();
+        network.add('fooblog', new Blog([
+            { id: 1, title: 'foo', date: '2012-10-05', category: 'bar', match: match }
+          , { id: 2, title: 'bar', date: '2012-10-03', category: 'bar', match: match }
+          , { id: 3, title: 'baz', date: '2012-10-01', category: 'foo', match: match }
+        ]));
+        network.add('barblog', new Blog([
+            { id: 1, title: 'a', date: '2012-10-06', category: 'foobar', match: match }
+          , { id: 2, title: 'b', date: '2012-10-04', category: 'bar', match: match }
+          , { id: 3, title: 'c', date: '2012-10-02', category: 'foobar', match: match }
+        ]));
+        network.on('load', function () {
+            network.posts('bar', function (err, posts) {
+                assert(!err, err);
+                assert(Array.isArray(posts));
+                assert.equal(posts[0].title, 'foo');
+                assert.equal(posts[1].title, 'b');
+                assert.equal(posts[2].title, 'bar');
+                done();
+            });
+        });
+    });
+
 });
 

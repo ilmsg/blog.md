@@ -267,5 +267,26 @@ describe('Blog', function () {
         });
     });
 
+    it('should use post.match() if available', function (done) {
+        function match(category) {
+            return this.category === category;
+        }
+        var blog = new Blog([
+            { id: 1, title: 'foo1', date: '2012-10-01', category: 'bar', match: match }
+          , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', match: match }
+          , { id: 3, title: 'foo3', date: '2012-08-01', category: 'foo', match: match }
+        ]);
+        blog.on('load', function () {
+            blog.posts('bar', function (err, posts) {
+                assert(!err, err);
+                assert(Array.isArray(posts));
+                assert.equal(posts[0].title, 'foo1');
+                assert.equal(posts[1].title, 'foo2');
+                assert.equal(blog.count('bar'), 2);
+                done();
+            });
+        });
+    });
+
 });
 

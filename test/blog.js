@@ -214,27 +214,6 @@ describe('Blog', function () {
         });
     });
 
-    it('should run a user-defined mapper function onload', function (done) {
-        var blog = new Blog([
-            { title: 'foo', date: '2012-10-01', category: 'bar' }
-          , { title: 'foo', date: '2012-10-02', category: 'foobar' }
-          , { title: 'bar', date: '2012-10-03', category: 'foobar' }
-          , { title: 'baz', date: '2012-10-04', category: 'baz' }
-        ]);
-        blog.map(function (post) {
-            post.permalink = format('/blog/%s/%s', blog.slug(post.category), post.slug);
-            return post;
-        });
-        blog.load(function (err) {
-            assert(!err, err);
-            blog.post('bar', function (err, post) {
-                assert(!err, err);
-                assert.equal(post.permalink, '/blog/foobar/bar');
-                done();
-            });
-        });
-    });
-
     it('should run a function when data changes', function (done) {
         var blog = new Blog([
             { title: 'foo', date: '2012-10-01', category: 'bar' }

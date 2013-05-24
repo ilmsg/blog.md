@@ -5,7 +5,7 @@ describe('Blog', function () {
 
     it('should parse post dates', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: '2012-10-01' }
+            { id: 1, title: 'foo', date: '2012-10-01' }
         ]);
         blog.on('load', function () {
             blog.post('foo', function (err, foo) {
@@ -19,7 +19,7 @@ describe('Blog', function () {
 
     it('should verify that posts have a valid title', function (done) {
         var blog = new Blog([
-            { date: '2012-10-01' }
+            { id: 1, date: '2012-10-01' }
         ]);
         blog.on('error', function () {
             done();
@@ -28,7 +28,16 @@ describe('Blog', function () {
 
     it('should verify that posts have a date', function (done) {
         var blog = new Blog([
-            { title: 'foo' }
+            { id: 1, title: 'foo' }
+        ]);
+        blog.on('error', function () {
+            done();
+        });
+    });
+
+    it('should verify that posts have an ID', function (done) {
+        var blog = new Blog([
+            { title: 'foo', date: new Date() }
         ]);
         blog.on('error', function () {
             done();
@@ -37,7 +46,7 @@ describe('Blog', function () {
 
     it('should verify that posts have a valid date', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: 'foo' }
+            { id: 1, title: 'foo', date: 'foo' }
         ]);
         blog.on('error', function () {
             done();
@@ -46,9 +55,9 @@ describe('Blog', function () {
 
     it('should give posts a unique slug', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-02' }
-          , { title: 'foo', date: '2012-10-03' }
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'foo', date: '2012-10-03' }
         ]);
         blog.on('load', function () {
             blog.post('foo', function (err, post) {
@@ -72,10 +81,10 @@ describe('Blog', function () {
 
     it('should select posts', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-02' }
-          , { title: 'bar', date: '2012-10-03' }
-          , { title: 'baz', date: '2012-10-04' }
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'bar', date: '2012-10-03' }
+          , { id: 4, title: 'baz', date: '2012-10-04' }
         ]);
         blog.on('load', function () {
             blog.posts(function (err, selected) {
@@ -92,10 +101,10 @@ describe('Blog', function () {
 
     it('should select posts while respecting a limit and offset parameter', function (done) {
         var blog = new Blog([
-            { title: 'foobar', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-02' }
-          , { title: 'bar', date: '2012-10-03' }
-          , { title: 'baz', date: '2012-10-04' }
+            { id: 1, title: 'foobar', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'bar', date: '2012-10-03' }
+          , { id: 4, title: 'baz', date: '2012-10-04' }
         ]);
         blog.on('load', function () {
             blog.posts(null, 2, 1, function (err, selected) {
@@ -111,9 +120,9 @@ describe('Blog', function () {
 
     it('should provide a way to get the number of matched posts', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: '2012-10-02' }
-          , { title: 'foo', date: '2012-10-03' }
-          , { title: 'baz', date: '2012-10-04' }
+            { id: 1, title: 'foo', date: '2012-10-02' }
+          , { id: 2, title: 'foo', date: '2012-10-03' }
+          , { id: 3, title: 'baz', date: '2012-10-04' }
         ]);
         blog.on('load', function () {
             assert.equal(blog.count(), 3);
@@ -124,10 +133,10 @@ describe('Blog', function () {
 
     it('should select posts while respecting an offset parameter', function (done) {
         var blog = new Blog([
-            { title: 'foobar', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-02' }
-          , { title: 'bar', date: '2012-10-03' }
-          , { title: 'baz', date: '2012-10-04' }
+            { id: 1, title: 'foobar', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'bar', date: '2012-10-03' }
+          , { id: 4, title: 'baz', date: '2012-10-04' }
         ]);
         blog.on('load', function () {
             blog.posts(null, null, 1, function (err, selected) {
@@ -143,10 +152,10 @@ describe('Blog', function () {
 
     it('should select posts using a query', function (done) {
         var blog = new Blog([
-            { title: 'foo', date: '2012-10-01', category: 'bar' }
-          , { title: 'foo', date: '2012-10-02', category: 'foo' }
-          , { title: 'bar', date: '2012-10-03', category: 'bar' }
-          , { title: 'baz', date: '2012-10-04', category: 'baz' }
+            { id: 1, title: 'foo', date: '2012-10-01', category: 'bar' }
+          , { id: 2, title: 'foo', date: '2012-10-02', category: 'foo' }
+          , { id: 3, title: 'bar', date: '2012-10-03', category: 'bar' }
+          , { id: 4, title: 'baz', date: '2012-10-04', category: 'baz' }
         ]);
         blog.on('load', function () {
             blog.posts({ category: 'bar' }, function (err, selected) {
@@ -183,10 +192,10 @@ describe('Blog', function () {
 
     it('should maintain an internal linked list to get prev/next posts', function (done) {
         var blog = new Blog([
-            { title: 'foo1', date: '2012-10-01', category: 'bar' }
-          , { title: 'foo2', date: '2012-10-02', category: 'foobar' }
-          , { title: 'bar1', date: '2012-10-03', category: 'foobar' }
-          , { title: 'bar2', date: '2012-10-04', category: 'baz' }
+            { id: 1, title: 'foo1', date: '2012-10-01', category: 'bar' }
+          , { id: 2, title: 'foo2', date: '2012-10-02', category: 'foobar' }
+          , { id: 3, title: 'bar1', date: '2012-10-03', category: 'foobar' }
+          , { id: 4, title: 'bar2', date: '2012-10-04', category: 'baz' }
         ]);
         blog.on('load', function () {
             blog.posts(function (err, selected) {

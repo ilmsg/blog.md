@@ -8,10 +8,10 @@ describe('Network', function () {
     it('should propagate blog loading errors', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([
-            { title: 'foo', date: '2012-10-01' }
+            { id: 1, title: 'foo', date: '2012-10-01' }
         ]));
         network.add('barblog', new Blog([
-            { title: 'a' /* missing date */ }
+            { id: 2, title: 'a' /* missing date */ }
         ]));
         network.on('error', function () {
             done();
@@ -21,14 +21,14 @@ describe('Network', function () {
     it('should select posts aggregated from all blogs', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([
-            { title: 'foo', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-03' }
-          , { title: 'bar', date: '2012-10-05' }
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-03' }
+          , { id: 3, title: 'bar', date: '2012-10-05' }
         ]));
         network.add('barblog', new Blog([
-            { title: 'a', date: '2012-10-02' }
-          , { title: 'b', date: '2012-10-04' }
-          , { title: 'c', date: '2012-10-06' }
+            { id: 1, title: 'a', date: '2012-10-02' }
+          , { id: 2, title: 'b', date: '2012-10-04' }
+          , { id: 3, title: 'c', date: '2012-10-06' }
         ]));
         network.on('load', function () {
             network.posts(function (err, selected) {
@@ -48,14 +48,14 @@ describe('Network', function () {
     it('should select posts while respecting a limit and offset parameter', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([
-            { title: 'foo', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-03' }
-          , { title: 'bar', date: '2012-10-05' }
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-03' }
+          , { id: 3, title: 'bar', date: '2012-10-05' }
         ]));
         network.add('barblog', new Blog([
-            { title: 'a', date: '2012-10-02' }
-          , { title: 'b', date: '2012-10-04' }
-          , { title: 'c', date: '2012-10-06' }
+            { id: 1, title: 'a', date: '2012-10-02' }
+          , { id: 2, title: 'b', date: '2012-10-04' }
+          , { id: 3, title: 'c', date: '2012-10-06' }
         ]));
         network.on('load', function () {
             network.posts(null, 3, 1, function (err, selected) {
@@ -74,14 +74,14 @@ describe('Network', function () {
     it('should select posts while respecting a limit and offset parameter', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([
-            { title: 'foobar', date: '2012-10-01' }
-          , { title: 'foo', date: '2012-10-03' }
-          , { title: 'bar', date: '2012-10-05' }
+            { id: 1, title: 'foobar', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-03' }
+          , { id: 3, title: 'bar', date: '2012-10-05' }
         ]));
         network.add('barblog', new Blog([
-            { title: 'a', date: '2012-10-02' }
-          , { title: 'b', date: '2012-10-04' }
-          , { title: 'c', date: '2012-10-06' }
+            { id: 1, title: 'a', date: '2012-10-02' }
+          , { id: 2, title: 'b', date: '2012-10-04' }
+          , { id: 3, title: 'c', date: '2012-10-06' }
         ]));
         network.on('load', function () {
             network.posts(null, null, 1, function (err, selected) {
@@ -105,14 +105,14 @@ describe('Network', function () {
     it('should select posts using a query', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([
-            { title: 'foo', date: '2012-10-01', category: 'bar' }
-          , { title: 'foo', date: '2012-10-03' }
-          , { title: 'bar', date: '2012-10-05' }
+            { id: 1, title: 'foo', date: '2012-10-01', category: 'bar' }
+          , { id: 2, title: 'foo', date: '2012-10-03' }
+          , { id: 3, title: 'bar', date: '2012-10-05' }
         ]));
         network.add('barblog', new Blog([
-            { title: 'a', date: '2012-10-02' }
-          , { title: 'b', date: '2012-10-04', category: 'bar' }
-          , { title: 'c', date: '2012-10-06' }
+            { id: 1, title: 'a', date: '2012-10-02' }
+          , { id: 2, title: 'b', date: '2012-10-04', category: 'bar' }
+          , { id: 3, title: 'c', date: '2012-10-06' }
         ]));
         network.on('load', function () {
             network.posts({ category: 'bar' }, function (err, selected) {

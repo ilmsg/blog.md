@@ -178,22 +178,6 @@ describe('Blog', function () {
         });
     });
 
-    it('should select a unique set of keys from each post', function (done) {
-        var blog = new Blog([
-            { title: 'foo', date: '2012-10-01', category: 'bar' }
-          , { title: 'foo', date: '2012-10-02', category: 'foobar' }
-          , { title: 'bar', date: '2012-10-03', category: 'bar' }
-          , { title: 'baz', date: '2012-10-04', category: 'baz' }
-        ]);
-        blog.load(function (err) {
-            assert(!err, err);
-            assert.deepEqual(blog.keys('category'), ['baz', 'bar', 'foobar']);
-            //Check the cached response
-            assert.deepEqual(blog.keys('category'), ['baz', 'bar', 'foobar']);
-            done();
-        });
-    });
-
     it('should load from the file system when a string is passed to the constructor', function (done) {
         var blog = new Blog(__dirname + '/data/blog2');
         blog.load(function (err) {

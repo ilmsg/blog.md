@@ -135,27 +135,6 @@ describe('Network', function () {
         });
     });
 
-    it('should select a unique set of keys from each post', function (done) {
-        var network = new Network();
-        network.add('fooblog', new Blog([
-            { title: 'foo', date: '2012-10-01', category: 'bar' }
-          , { title: 'foo', date: '2012-10-03', category: 'bar' }
-          , { title: 'bar', date: '2012-10-05', category: 'foo' }
-        ]));
-        network.add('barblog', new Blog([
-            { title: 'a', date: '2012-10-02', category: 'foobar' }
-          , { title: 'b', date: '2012-10-04', category: 'bar' }
-          , { title: 'c', date: '2012-10-06', category: 'foobar' }
-        ]));
-        network.load(function (err) {
-            assert(!err, err);
-            assert.deepEqual(network.keys('category'), ['foo', 'bar', 'foobar']);
-            //Check the cached response
-            assert.deepEqual(network.keys('category'), ['foo', 'bar', 'foobar']);
-            done();
-        });
-    });
-
     it('should chain queries together', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([

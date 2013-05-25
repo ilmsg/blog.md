@@ -36,6 +36,16 @@ describe('Blog', function () {
         });
     });
 
+    it('should verify that post ids are unique', function (done) {
+        var blog = new Blog([
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 1, title: 'foo', date: '2012-10-01' }
+        ]);
+        blog.on('error', function () {
+            done();
+        });
+    });
+
     it('should verify that posts have a date', function (done) {
         var blog = new Blog([
             { id: 1, title: 'foo' }

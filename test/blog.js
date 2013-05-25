@@ -4,6 +4,15 @@ var assert = require('assert')
   , Blog = require(lib_dir + 'blog').Blog
   , ArrayLoader = require(lib_dir + 'loaders/array').ArrayLoader;
 
+function isSorted(posts) {
+    for (var i = 1; i < posts.length; i++) {
+        if (posts[i].date > posts[i - 1].date) {
+            return false;
+        }
+    }
+    return true;
+}
+
 describe('Blog', function () {
 
     it('should parse post dates', function (done) {
@@ -78,7 +87,7 @@ describe('Blog', function () {
             post = blog.post('foo-3');
             assert.equal(new Date('2012-10-03').getTime(), post.date.getTime());
             var posts = blog.select();
-            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
+            assert(isSorted(posts));
             done();
         });
     });
@@ -97,7 +106,7 @@ describe('Blog', function () {
             post = blog.post('foo-3');
             assert.equal(new Date('2012-10-03').getTime(), post.date.getTime());
             var posts = blog.select();
-            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
+            assert(isSorted(posts));
             done();
         });
     });
@@ -116,7 +125,7 @@ describe('Blog', function () {
             post = blog.post('foo-3');
             assert.equal(new Date('2012-10-02').getTime(), post.date.getTime());
             var posts = blog.select();
-            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
+            assert(isSorted(posts));
             done();
         });
     });
@@ -135,7 +144,7 @@ describe('Blog', function () {
             post = blog.post('foo');
             assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
             var posts = blog.select();
-            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
+            assert(isSorted(posts));
             done();
         });
     });
@@ -323,6 +332,119 @@ describe('Blog', function () {
             done();
         });
         loader.emit('error', new Error());
+    });
+
+    it('should listen for new posts', function (done) {
+        var posts = [
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'foo', date: '2012-10-03' }
+        ];
+        var loader = new ArrayLoader(posts)
+          , blog = new Blog(loader);
+        blog.on('load', function () {
+            var posts = blog.select();
+            assert.equal(posts.length, 3);
+            assert(isSorted(posts));
+            loader.emit('new_post', { id: 4, title: 'bar', date: '2012-10-04' });
+            posts = blog.select();
+            assert.equal(posts.length, 4);
+            assert(isSorted(posts));
+            assert.equal(blog.post('bar').title, 'bar');
+            assert.equal(blog.count(), 4);
+            loader.emit('new_post', { id: 5, title: 'baz', date: '2012-10-02' });
+            posts = blog.select();
+            assert.equal(posts.length, 5);
+            assert(isSorted(posts));
+            assert.equal(blog.post('baz').title, 'baz');
+            assert.equal(blog.count(), 5);
+            done();
+        });
+    });
+
+    it('should fail if a new post is missing fields', function (done) {
+        var loader = new ArrayLoader([])
+          , blog = new Blog(loader);
+        blog.on('load', function () {
+            loader.emit('new_post', { id: 2 });
+        });
+        blog.on('error', function () {
+            done();
+        });
+    });
+
+    it('should fail if a new post has duplicate id', function (done) {
+        var loader = new ArrayLoader([
+            { id: 1, title: 'foo', date: '2012-10-01' }
+        ]);
+        var blog = new Blog(loader);
+        blog.on('load', function () {
+            loader.emit('new_post', { id: 1, title: 'foo', date: '2012-10-10' });
+        });
+        blog.on('error', function () {
+            done();
+        });
+    });
+
+    it('should remove posts', function (done) {
+        var posts = [
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'foo', date: '2012-10-03' }
+        ];
+        var loader = new ArrayLoader(posts)
+          , blog = new Blog(loader);
+        blog.on('load', function () {
+            var posts = blog.select();
+            assert.equal(posts.length, 3);
+            assert(isSorted(posts));
+            assert.equal(blog.count(), 3);
+            loader.emit('removed_post', { id: 2, title: 'foo', date: '2012-10-02' });
+            posts = blog.select();
+            assert.equal(posts.length, 2);
+            assert(isSorted(posts));
+            assert(!blog.post('foo-2'));
+            var post = blog.post('foo');
+            assert.equal(post.id, 1);
+            assert.equal(post.next, null);
+            assert.equal(post.prev.id, 3);
+            assert.equal(post.prev.next.id, 1);
+            assert.equal(post.prev.prev, null);
+            assert.equal(blog.count(), 2);
+            loader.emit('removed_post', { id: 1, title: 'foo', date: '2012-10-01' });
+            posts = blog.select();
+            assert.equal(posts.length, 1);
+            assert(isSorted(posts));
+            assert(!blog.post('foo'));
+            post = blog.post('foo-3');
+            assert.equal(post.id, 3);
+            assert.equal(post.next, null);
+            assert.equal(post.prev, null);
+            assert.equal(blog.count(), 1);
+            done();
+        });
+    });
+
+    it('should update posts', function (done) {
+        var posts = [
+            { id: 1, title: 'Foo', date: '2012-10-01' }
+        ];
+        var loader = new ArrayLoader(posts)
+          , blog = new Blog(loader);
+        blog.on('load', function () {
+            var post = blog.post('foo');
+            assert.equal(post.id, 1);
+            assert.equal(post.title, 'Foo');
+            assert.equal(post.slug, 'foo');
+            loader.emit('updated_post', { id: 1, title: 'Bar', date: '2012-10-01' });
+            post = blog.post('bar');
+            assert(!blog.post('foo'));
+            assert.equal(post.id, 1);
+            assert.equal(post.title, 'Bar');
+            assert.equal(post.slug, 'bar');
+            assert.equal(blog.count(), 1);
+            done();
+        });
     });
 
 });

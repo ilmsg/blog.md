@@ -1,15 +1,67 @@
 **blog.md**
 
-## Installation
+## Usage
 
 ```bash
 $ npm install blog.md
 ```
 
+Create a directory and fill it with your markdown posts. You're free to organise the directory however you see fit.
+
+Here's an example post
+
+```
+title: My Awesome Post
+date: 2013-05-25
+category: Foobar
+
+This is the post body. It's written in [markdown](http://daringfireball.net/projects/markdown/), **cool**.
+```
+
+A few things to note
+
+- Post attributes take the form `key: value`.
+- The post body starts exactly two newlines after the attributes.
+- The *title* and *date* attributes are required.
+- A unique slug is automatically generated from the *title* attribute, unless specified.
+
+```javascript
+var Blog = require('blog.md').Blog;
+
+var blog = new Blog(__dirname + '/blog');
+blog.on('load', function () {
+    //...
+});
+```
+
+That's it. The library automatically detects updates to your posts (using `fs.watch`).
+
+## API
+
+**blog.post(slug)** - Select a post by its unique slug
+
+```javascript
+var post = blog.post('my-awesome-post');
+```
+
+**blog.select(options)** - Select multiple posts. The options object can contain a mongodb-style *query* and a *limit* and/or *offset* for pagination. Posts are always sorted by date descending unless the *random* flag is specified.
+
+```javascript
+var posts = blog.select({ query: { category: 'Foobar' }, limit: 10 });
+```
+
 ## Tests
 
 ```bash
-$ make test
+$ make check
+```
+
+Test verbosity can be increased by using `V=1`, e.g. `V=1 make check`
+
+Code coverage analysis (requires a custom [jscoverage][8]) can be run with
+
+```bash
+$ make coverage
 ```
 
 ## License (MIT)

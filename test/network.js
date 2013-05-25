@@ -61,9 +61,7 @@ describe('Network', function () {
             var posts = network.select({ limit: 3, offset: 1 });
             assert.equal(posts.length, 3);
             assert.equal(posts[0].title, 'bar');
-            assert.equal(posts[0].blog_name, 'fooblog');
             assert.equal(posts[1].title, 'b');
-            assert.equal(posts[1].blog_name, 'barblog');
             assert.equal(posts[2].title, 'foo');
             done();
         });
@@ -107,15 +105,10 @@ describe('Network', function () {
             var posts = network.select({ offset: 1 });
             assert.equal(posts.length, 5);
             assert.equal(posts[0].title, 'bar');
-            assert.equal(posts[0].blog_name, 'fooblog');
             assert.equal(posts[1].title, 'b');
-            assert.equal(posts[1].blog_name, 'barblog');
             assert.equal(posts[2].title, 'foo');
-            assert.equal(posts[2].blog_name, 'fooblog');
             assert.equal(posts[3].title, 'a');
-            assert.equal(posts[3].blog_name, 'barblog');
             assert.equal(posts[4].title, 'foobar');
-            assert.equal(posts[4].blog_name, 'fooblog');
             done();
         });
     });

@@ -17,7 +17,7 @@ describe('Blog', function () {
 
     it('should parse post dates', function (done) {
         var blog = new Blog([
-            { id: 1, title: 'foo', date: '2012-10-01' }
+            { title: 'foo', date: '2012-10-01' }
         ]);
         blog.on('load', function () {
             var post = blog.post('foo');
@@ -30,15 +30,6 @@ describe('Blog', function () {
     it('should verify that posts have a valid title', function (done) {
         var blog = new Blog([
             { id: 1, date: '2012-10-01' }
-        ]);
-        blog.on('error', function () {
-            done();
-        });
-    });
-
-    it('should verify that posts have an id', function (done) {
-        var blog = new Blog([
-            { title: 'foo', date: '2012-10-01' }
         ]);
         blog.on('error', function () {
             done();
@@ -367,6 +358,17 @@ describe('Blog', function () {
           , blog = new Blog(loader);
         blog.on('load', function () {
             loader.emit('new_post', { id: 2 });
+        });
+        blog.on('error', function () {
+            done();
+        });
+    });
+
+    it('should fail if a new post is missing an id', function (done) {
+        var loader = new ArrayLoader([])
+          , blog = new Blog(loader);
+        blog.on('load', function () {
+            loader.emit('new_post', { title: 'Foobar', adte: '2012-10-10' });
         });
         blog.on('error', function () {
             done();

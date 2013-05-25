@@ -11,7 +11,7 @@ describe('Blog', function () {
             { id: 1, title: 'foo', date: '2012-10-01' }
         ]);
         blog.on('load', function () {
-            var post = blog.post('foo');
+            var post = blog.post(1);
             assert(post.date instanceof Date);
             assert.equal(post.date.getTime(), new Date('2012-10-01').getTime());
             done();
@@ -45,76 +45,39 @@ describe('Blog', function () {
         });
     });
 
-    it('should give posts a unique slug', function (done) {
-        var blog = new Blog([
-            { id: 1, title: 'foo', date: '2012-10-01' }
-          , { id: 2, title: 'foo', date: '2012-10-02' }
-          , { id: 3, title: 'foo', date: '2012-10-03' }
-        ]);
-        blog.on('load', function () {
-            var post = blog.post('foo');
-            assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
-            post = blog.post('foo-2');
-            assert.equal(new Date('2012-10-02').getTime(), post.date.getTime());
-            post = blog.post('foo-3');
-            assert.equal(new Date('2012-10-03').getTime(), post.date.getTime());
-            var posts = blog.select();
-            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
-            done();
-        });
-    });
-
-    it('should skip slug generation if slugs already exist', function (done) {
-        var blog = new Blog([
-            { id: 1, title: 'foo', date: '2012-10-01', slug: 'foo-1' }
-          , { id: 2, title: 'foo', date: '2012-10-02', slug: 'foo-2' }
-          , { id: 3, title: 'foo', date: '2012-10-03', slug: 'foo-3' }
-        ]);
-        blog.on('load', function () {
-            var post = blog.post('foo-1');
-            assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
-            post = blog.post('foo-2');
-            assert.equal(new Date('2012-10-02').getTime(), post.date.getTime());
-            post = blog.post('foo-3');
-            assert.equal(new Date('2012-10-03').getTime(), post.date.getTime());
-            var posts = blog.select();
-            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
-            done();
-        });
-    });
-
-    it('should sort posts when no slugs need to be generated', function (done) {
+    it('should sort posts by date descending', function (done) {
         var blog = new Blog([
             { id: 1, title: 'foo', date: '2012-10-03', slug: 'foo-1' }
           , { id: 2, title: 'foo', date: '2012-10-01', slug: 'foo-2' }
           , { id: 3, title: 'foo', date: '2012-10-02', slug: 'foo-3' }
         ]);
         blog.on('load', function () {
-            var post = blog.post('foo-1');
-            assert.equal(new Date('2012-10-03').getTime(), post.date.getTime());
-            post = blog.post('foo-2');
-            assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
-            post = blog.post('foo-3');
-            assert.equal(new Date('2012-10-02').getTime(), post.date.getTime());
             var posts = blog.select();
             assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
             done();
         });
     });
 
-    it('should sort the posts when slugs need to be generated', function (done) {
+    it('should skip sorting if the array is already sorted', function (done) {
         var blog = new Blog([
             { id: 1, title: 'foo', date: '2012-10-03' }
-          , { id: 2, title: 'foo', date: '2012-10-01' }
-          , { id: 3, title: 'foo', date: '2012-10-02' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'foo', date: '2012-10-01' }
         ]);
         blog.on('load', function () {
-            var post = blog.post('foo-3');
-            assert.equal(new Date('2012-10-03').getTime(), post.date.getTime());
-            post = blog.post('foo-2');
-            assert.equal(new Date('2012-10-02').getTime(), post.date.getTime());
-            post = blog.post('foo');
-            assert.equal(new Date('2012-10-01').getTime(), post.date.getTime());
+            var posts = blog.select();
+            assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
+            done();
+        });
+    });
+
+    it('should skip sorting if the array is already sorted (reversed)', function (done) {
+        var blog = new Blog([
+            { id: 1, title: 'foo', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'foo', date: '2012-10-03' }
+        ]);
+        blog.on('load', function () {
             var posts = blog.select();
             assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
             done();
@@ -223,11 +186,11 @@ describe('Blog', function () {
     it('should load from the file system when a string is passed to the constructor', function (done) {
         var blog = new Blog(__dirname + '/data/blog2');
         blog.on('load', function () {
-            var post1 = blog.post('post1');
+            var post1 = blog.post(__dirname + '/data/blog2/a/post1.md');
             assert.equal(post1.title, 'post1');
             assert(post1.date instanceof Date);
             assert.equal(post1.date.getTime(), new Date('2012-10-01').getTime());
-            var post2 = blog.post('post2');
+            var post2 = blog.post(__dirname + '/data/blog2/b/post2.md');
             assert.equal(post2.title, 'post2');
             assert(post2.date instanceof Date);
             assert.equal(post2.date.getTime(), new Date('2012-10-02').getTime());

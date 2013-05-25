@@ -1,5 +1,7 @@
+var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
+
 var assert = require('assert')
-  , FileSystemLoader = require('../').FileSystemLoader;
+  , FileSystemLoader = require(lib_dir + 'loaders/fs').FileSystemLoader;
 
 describe('File System Loader', function () {
 
@@ -21,15 +23,6 @@ describe('File System Loader', function () {
         var loader = new FileSystemLoader(__dirname + '/data/blog1');
         loader.on('error', function (err) {
             assert(err);
-            done();
-        });
-    });
-
-    it('should load blog metadata', function (done) {
-        var loader = new FileSystemLoader(__dirname + '/data/blog2');
-        loader.on('load', function (posts, blog) {
-            assert.equal(blog.foo, 'bar');
-            assert.equal(blog.name, 'My blog');
             done();
         });
     });

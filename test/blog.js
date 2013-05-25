@@ -27,6 +27,15 @@ describe('Blog', function () {
         });
     });
 
+    it('should verify that posts have an id', function (done) {
+        var blog = new Blog([
+            { title: 'foo', date: '2012-10-01' }
+        ]);
+        blog.on('error', function () {
+            done();
+        });
+    });
+
     it('should verify that posts have a date', function (done) {
         var blog = new Blog([
             { id: 1, title: 'foo' }

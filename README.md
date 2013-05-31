@@ -58,7 +58,7 @@ $ make check
 
 Test verbosity can be increased by using `V=1`, e.g. `V=1 make check`
 
-Code coverage analysis (requires [jscoverage][https://github.com/visionmedia/node-jscoverage]) can be run with
+Code coverage analysis (requires [jscoverage](https://github.com/visionmedia/node-jscoverage)) can be run with
 
 ```bash
 $ make coverage

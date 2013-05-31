@@ -40,6 +40,7 @@ describe('Network', function () {
             assert.equal(posts[3].title, 'foo');
             assert.equal(posts[4].title, 'a');
             assert.equal(posts[5].title, 'foo');
+            assert.equal(network.count(), 6);
             done();
         });
     });
@@ -133,6 +134,7 @@ describe('Network', function () {
             posts.forEach(function (post) {
                 assert.equal(post.category, 'bar');
             });
+            assert.equal(network.count({ query: { category: 'bar' }}), 2);
             done();
         });
     });

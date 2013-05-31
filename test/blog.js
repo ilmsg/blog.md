@@ -449,5 +449,33 @@ describe('Blog', function () {
         });
     });
 
+    it('should provide a way to fill results with random posts', function (done) {
+        var blog = new Blog([
+            { id: 1, title: 'foo', date: '2012-10-01', category: 'foo' }
+          , { id: 2, title: 'foo', date: '2012-10-01' }
+          , { id: 3, title: 'foo', date: '2012-10-01' }
+        ]);
+        blog.on('load', function () {
+            var posts = blog.select({ query: { category: 'foo' }, limit: 2 });
+            assert.equal(posts.length, 1);
+            assert.equal(posts[0].id, 1);
+            posts = blog.select({ query: { category: 'foo' }, limit: 2, fill: true });
+            assert.equal(posts.length, 2);
+            assert(posts[0].id, 1);
+            assert(posts[1].id === 2 || posts[1].id === 3);
+            posts = blog.select({ query: { category: 'foo' }, limit: 3, fill: true });
+            assert.equal(posts.length, 3);
+            assert.equal(posts[0].id, 1);
+            assert(posts[1].id === 2 || posts[1].id === 3);
+            assert(posts[2].id === 2 || posts[2].id === 3);
+            posts = blog.select({ query: { category: 'foo' }, limit: 4, fill: true });
+            assert.equal(posts.length, 3);
+            assert.equal(posts[0].id, 1);
+            assert(posts[1].id === 2 || posts[1].id === 3);
+            assert(posts[2].id === 2 || posts[2].id === 3);
+            done();
+        });
+    });
+
 });
 

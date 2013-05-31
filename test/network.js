@@ -165,5 +165,11 @@ describe('Network', function () {
         });
     });
 
+    it('should throw an error if an unknown select() option is passed', function () {
+        assert.throws(function () {
+            Network.prototype.select({ foo: 'bar' });
+        });
+    });
+
 });
 

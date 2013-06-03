@@ -176,6 +176,21 @@ describe('Blog', function () {
         });
     });
 
+    it('should handle bad input', function (done) {
+        var blog = new Blog([
+            { id: 1, title: 'foobar', date: '2012-10-01' }
+          , { id: 2, title: 'foo', date: '2012-10-02' }
+          , { id: 3, title: 'bar', date: '2012-10-03' }
+          , { id: 4, title: 'baz', date: '2012-10-04' }
+        ]);
+        blog.on('load', function () {
+            assert.equal(blog.select({ limit: -10 }).length, 0);
+            assert.equal(blog.select({ limit: 10, page: -1 }).length, 0);
+            assert.equal(blog.select({ limit: 10, offset: -1 }).length, 0);
+            done();
+        });
+    });
+
     it('should select posts while respecting a limit and page parameter', function (done) {
         var blog = new Blog([
             { id: 1, title: 'foobar', date: '2012-10-01' }

@@ -70,6 +70,27 @@ describe('Network', function () {
         });
     });
 
+    it('should handle bad input', function (done) {
+        var network = new Network({
+            fooblog: new Blog([
+                { id: 1, title: 'foo', date: '2012-10-01' }
+              , { id: 2, title: 'foo', date: '2012-10-03' }
+              , { id: 3, title: 'bar', date: '2012-10-05' }
+            ]),
+            barblog: new Blog([
+                { id: 1, title: 'a', date: '2012-10-02' }
+              , { id: 2, title: 'b', date: '2012-10-04' }
+              , { id: 3, title: 'c', date: '2012-10-06' }
+            ])
+        });
+        network.on('load', function () {
+            assert.equal(network.select({ limit: 3, offset: -1 }).length, 0);
+            assert.equal(network.select({ limit: -3, offset: 1 }).length, 0);
+            assert.equal(network.select({ limit: 3, page: -1 }).length, 0);
+            done();
+        });
+    });
+
     it('should select posts while respecting a limit and offset parameter', function (done) {
         var network = new Network();
         network.add('fooblog', new Blog([

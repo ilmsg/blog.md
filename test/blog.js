@@ -170,6 +170,8 @@ describe('Blog', function () {
             assert.equal(posts.length, 2);
             assert.equal(posts[0].title, 'bar');
             assert.equal(posts[1].title, 'foo');
+            posts = blog.select({ limit: '2', offset: '1' });
+            assert.equal(posts.length, 2);
             done();
         });
     });

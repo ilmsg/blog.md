@@ -64,6 +64,8 @@ describe('Network', function () {
             assert.equal(posts[0].title, 'bar');
             assert.equal(posts[1].title, 'b');
             assert.equal(posts[2].title, 'foo');
+            posts = network.select({ limit: '3', offset: '1' });
+            assert.equal(posts.length, 3);
             done();
         });
     });

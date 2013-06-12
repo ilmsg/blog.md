@@ -526,6 +526,23 @@ describe('Blog', function () {
             assert.equal(posts.length, 2);
             assert(posts[0].id, 1);
             assert(posts[1].id === 2 || posts[1].id === 3);
+
+            posts = blog.select({ query: { category: 'foo' }, limit: 2, fill: true, not: [ 1 ] });
+            assert.equal(posts.length, 2);
+            assert(posts[0].id === 2 || posts[0].id === 3);
+            assert(posts[1].id === 2 || posts[1].id === 3);
+            assert(posts[0].id !== posts[1].id);
+            posts = blog.select({ query: { category: 'foo' }, limit: 2, fill: true, not: 1 });
+            assert.equal(posts.length, 2);
+            assert(posts[0].id === 2 || posts[0].id === 3);
+            assert(posts[1].id === 2 || posts[1].id === 3);
+            assert(posts[0].id !== posts[1].id);
+            posts = blog.select({ query: { category: 'foo' }, limit: 2, fill: true, not: { 1: true } });
+            assert.equal(posts.length, 2);
+            assert(posts[0].id === 2 || posts[0].id === 3);
+            assert(posts[1].id === 2 || posts[1].id === 3);
+            assert(posts[0].id !== posts[1].id);
+
             posts = blog.select({ query: { category: 'foo' }, limit: 3, fill: true });
             assert.equal(posts.length, 3);
             assert.equal(posts[0].id, 1);

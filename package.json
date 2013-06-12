@@ -1,6 +1,6 @@
 {
   "name": "blog.md",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "BLOGS + MARKDOWN",
   "main": "index.js",
   "scripts": {

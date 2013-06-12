@@ -161,10 +161,10 @@ describe('Blog', function () {
 
     it('should select posts while respecting a limit and offset parameter', function (done) {
         var blog = new Blog([
-            { id: 1, title: 'foobar', date: '2012-10-01' }
-          , { id: 2, title: 'foo', date: '2012-10-02' }
-          , { id: 3, title: 'bar', date: '2012-10-03' }
-          , { id: 4, title: 'baz', date: '2012-10-04' }
+            { id: 1, title: 'foobar', date: '2012-10-01', category: 'foo' }
+          , { id: 2, title: 'foo', date: '2012-10-02', category: 'foo' }
+          , { id: 3, title: 'bar', date: '2012-10-03', category: 'bar' }
+          , { id: 4, title: 'baz', date: '2012-10-04', category: 'bar' }
         ]);
         blog.on('load', function () {
             var posts = blog.select({ limit: 2, offset: 1 });
@@ -173,6 +173,12 @@ describe('Blog', function () {
             assert.equal(posts[1].title, 'foo');
             posts = blog.select({ limit: '2', offset: '1' });
             assert.equal(posts.length, 2);
+            posts = blog.select({ query: { category: 'foo' }, limit: 1, offset: 1 });
+            assert.equal(posts.length, 1);
+            assert.equal(posts[0].title, 'foobar');
+            posts = blog.select({ limit: 1 });
+            assert.equal(posts.length, 1);
+            assert.equal(posts[0].title, 'baz');
             done();
         });
     });

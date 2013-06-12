@@ -2,6 +2,7 @@ var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
 
 var assert = require('assert')
   , Blog = require(lib_dir + 'blog').Blog
+  , StopIteration = require(lib_dir + 'blog').StopIteration
   , ArrayLoader = require(lib_dir + 'loaders/array').ArrayLoader;
 
 function isSorted(posts) {
@@ -329,6 +330,45 @@ describe('Blog', function () {
             assert.equal(posts[0].title, 'foo1');
             assert.equal(posts[1].title, 'foo2');
             assert.equal(blog.count({ query: 'bar' }), 2);
+            done();
+        });
+    });
+
+    it('should respect StopIteration when using post.match()', function (done) {
+        var i = 0;
+        function match() {
+            if (++i === 3) {
+                throw new StopIteration();
+            }
+            return true;
+        }
+        var blog = new Blog([
+            { id: 1, title: 'foo1', date: '2012-10-01', category: 'bar', match: match }
+          , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', match: match }
+          , { id: 3, title: 'foo3', date: '2012-08-01', category: 'bar', match: match }
+        ]);
+        blog.on('load', function () {
+            var posts = blog.select({ query: { category: 'bar' } });
+            assert(Array.isArray(posts));
+            assert.equal(posts.length, 2);
+            assert.equal(posts[0].title, 'foo1');
+            done();
+        });
+    });
+
+    it('should propagate errors form within post.match()', function (done) {
+        function match() {
+            throw new Error();
+        }
+        var blog = new Blog([
+            { id: 1, title: 'foo1', date: '2012-10-01', category: 'bar', match: match }
+          , { id: 2, title: 'foo2', date: '2012-09-01', category: 'bar', match: match }
+          , { id: 3, title: 'foo3', date: '2012-08-01', category: 'bar', match: match }
+        ]);
+        blog.on('load', function () {
+            assert.throws(function () {
+                blog.select({ query: { category: 'bar' } });
+            });
             done();
         });
     });

@@ -3,7 +3,8 @@ var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
 var assert = require('assert')
   , Blog = require(lib_dir + 'blog').Blog
   , StopIteration = require(lib_dir + 'blog').StopIteration
-  , ArrayLoader = require(lib_dir + 'loaders/array').ArrayLoader;
+  , ArrayLoader = require(lib_dir + 'loaders/array').ArrayLoader
+  , EventEmitter = require('events').EventEmitter;
 
 function isSorted(posts) {
     for (var i = 1; i < posts.length; i++) {
@@ -561,6 +562,56 @@ describe('Blog', function () {
         assert.throws(function () {
             Blog.prototype.select({ foo: 'bar' });
         });
+    });
+
+    it('should provide a next/prev link on each post', function () {
+        var source = new EventEmitter()
+          , blog = new Blog(source)
+          , post;
+        source.emit('new_post', { id: 1, title: 'Foo', date: new Date('2013-06-15') });
+        assert.equal(blog.posts[0].id, 1);
+        assert(!blog.posts[0].next && !blog.posts[0].prev);
+        source.emit('new_post', { id: 2, title: 'Bar', date: new Date('2013-06-13') });
+        assert.equal(blog.posts[0].id, 1);
+        assert.equal(blog.posts[1].id, 2);
+        assert.equal(blog.posts[0].next.id, 2);
+        assert.equal(blog.posts[1].prev.id, 1);
+        assert(!blog.posts[1].next && !blog.posts[0].prev);
+        source.emit('new_post', { id: 3, title: 'Baz', date: new Date('2013-07-13') });
+        assert.equal(blog.posts[0].id, 3);
+        assert.equal(blog.posts[1].id, 1);
+        assert.equal(blog.posts[2].id, 2);
+        assert(!blog.posts[2].next && !blog.posts[0].prev);
+        assert.equal(blog.posts[0].next.id, 1);
+        assert.equal(blog.posts[1].next.id, 2);
+        assert.equal(blog.posts[2].prev.id, 1);
+        assert.equal(blog.posts[1].prev.id, 3);
+        source.emit('new_post', { id: 4, title: 'Qux', date: new Date('2013-06-14') });
+        assert.equal(blog.posts[0].id, 3);
+        assert.equal(blog.posts[1].id, 1);
+        assert.equal(blog.posts[2].id, 4);
+        assert.equal(blog.posts[3].id, 2);
+        assert(!blog.posts[3].next && !blog.posts[0].prev);
+        assert.equal(blog.posts[0].next.id, 1);
+        assert.equal(blog.posts[1].next.id, 4);
+        assert.equal(blog.posts[2].next.id, 2);
+        assert.equal(blog.posts[3].prev.id, 4);
+        assert.equal(blog.posts[2].prev.id, 1);
+        assert.equal(blog.posts[1].prev.id, 3);
+        source.emit('updated_post', { id: 4, title: 'Fooqux', date: new Date('2013-06-14') });
+        assert.equal(blog.posts[1].next.title, 'Fooqux');
+        assert.equal(blog.posts[3].prev.title, 'Fooqux');
+        assert.equal(blog.posts[2].prev.next.title, 'Fooqux');
+        assert.equal(blog.posts[2].next.prev.title, 'Fooqux');
+        source.emit('removed_post', { id: 4 });
+        assert.equal(blog.posts[0].id, 3);
+        assert.equal(blog.posts[1].id, 1);
+        assert.equal(blog.posts[2].id, 2);
+        assert(!blog.posts[2].next && !blog.posts[0].prev);
+        assert.equal(blog.posts[0].next.id, 1);
+        assert.equal(blog.posts[1].next.id, 2);
+        assert.equal(blog.posts[2].prev.id, 1);
+        assert.equal(blog.posts[1].prev.id, 3);
     });
 
 });
